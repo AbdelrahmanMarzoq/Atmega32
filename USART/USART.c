@@ -14,6 +14,18 @@
 void USART_Init(USART_Pins *USART_Config)
 {
 	
+	
+	/*  This Code run good */
+	UCSRA = 0b00000000;
+	UCSRB = 0b00011000;
+	UCSRC = 0b10000110;
+	//UBRRH = 0;
+	UBRRL = 51;
+	/*********/
+	
+	
+	/**   This Init Need Some Enhancment */
+	/*
 	// Disable IRQ first Before Init
 	UCSRB &= ~(0b111 << 5);			  // Disable IRQ for USART
 	
@@ -25,7 +37,7 @@ void USART_Init(USART_Pins *USART_Config)
 	unsigned short BaudRate_Value;
 	BaudRate_Value = (F_OSC / (16 * USART_Config->BaudRate_Mode)) - 1;
 	
-	UBRRH |= (unsigned char)((BaudRate_Value >> 8) & (0xF));
+	//UBRRH |= 0;
 	UBRRL  = (unsigned char)(BaudRate_Value & 0xFF);
 	
 	// Set Bit 7 In Reg UCSRC to Write in UCSRC if it 0 you will Write in Reg UBRRH
@@ -110,13 +122,12 @@ void USART_Init(USART_Pins *USART_Config)
 	}
 	else if (USART_Config->IRQ_Mode == USART_IRQ_NONE)
 		UCSRB &= ~(0b111 << 5);			  // Disable IRQ for USART
-		
+		*/
 }
 
 void USART_TX(USART_Pins *USART_Config, const unsigned char *TX_Buffer)
 {
 	// Polling untill UDR is Ready
-	while ((UCSRA & (1 << 5)) );
 
 	if (USART_Config->Parity_Mode == Parity_NONE)
 	{
@@ -131,14 +142,14 @@ void USART_TX(USART_Pins *USART_Config, const unsigned char *TX_Buffer)
 	{
 		// To Do
 	}
-
+	while (! ( UCSRA & (1 << 5) ) );
 	
 }
 
 void USART_RX(USART_Pins *USART_Config, unsigned char *RX_Buffer)
 {
 	// Polling untill Recieve Is Non Empty
-	while (!(UCSRA & (1 << 7)) );
+	while (! ( UCSRA & (1 << 7) ) );
 	if (USART_Config->Parity_Mode == Parity_NONE)
 	{
 		if (USART_Config->Data_Mode == BIT_8)
