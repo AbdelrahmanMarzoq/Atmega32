@@ -30,6 +30,8 @@ void ADC_init(ADC_Pin *ADC_Conf)
 
 void ADC_init_CALL_BACK(void (*CALL_BACK)(void))
 {
+	// Take The Function Cal Back 
+	// Need to make Array For 7 Channel (Future)
 	Global_PTR = CALL_BACK;
 }
 
@@ -47,12 +49,16 @@ unsigned short ADC_Read(ADC_Pin *ADC_Conf)
 	// Start Conversion
 	ADCSRA |= 0b1 << 6;
 	
+	// Polling untill Complete Conversion can make with IRQ
 	while(!(ADCSRA & (1 << 4)));
 
+	// Clear Flag
 	ADCSRA &= ~(0b1 << 4);
 	
+	// Read Data As Right not Left
 	Data = (ADCL | ((ADCH & (0x03)) << 8) );
 	
+	// Return Data
 	return Data;	
 	
 }
